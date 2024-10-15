@@ -34,4 +34,17 @@ class AuthService
 
     }
 
+    public function login(array $data){
+        $emailCheck = User::where("email", $data['email'])->first();
+        if (!$emailCheck) {
+            return false;            
+        }
+        if (Auth::attempt($data)) {
+            return true;
+        }
+        else {
+            return false;            
+        }
+    }
+
 }

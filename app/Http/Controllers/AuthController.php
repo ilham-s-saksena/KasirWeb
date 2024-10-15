@@ -13,15 +13,25 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $data = $authService->index($validated);
+        if ($request->expectsJson()) {
+            
+            $data = $authService->index($validated);
+    
+            return response()->json([
+                'message' => $data['message'],
+                'token' => $data['token'],
+                'role' => $data['role'],
+                'isMerchantExist' => $data['isMerchantExist']
+            ]);
 
-        return response()->json([
-            'message' => $data['message'],
-            'token' => $data['token'],
-            'role' => $data['role'],
-            'isMerchantExist' => $data['isMerchantExist']
-        ]);
-        
+        } else {
+            if ($authService->login($validated)) {
+                return redirect()->route('dashboard');
+            } else {
+                return redirect()->back()->with('message', 'invalid email or password');
+            }
+            
+        }
     }
 
     public function login(){
